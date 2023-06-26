@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Media Checker</title>
+  <style>
+    body {
+      background-color: #000000;
+      color: white;
+      padding: 0 10%;
+    }
+    
+    button {
+      margin-top: 30px;
+      width: 20%;
+      padding: 10px 5%;
+      border: 2px solid rgba(255, 29, 29, 0.741);
+      border-radius: 1px;
+      background: transparent;
+      color: rgba(255, 29, 29, 0.741);
+      box-shadow: 0 0 10px #ff4520;
+    }
+    
+    .input-container {
+      background-color: #15014d6f;
+      width: 90%;
+      margin: 0;
+      padding: 40px 50px;
+      text-align: center;
+    }
+    
+    .socialmedia-container {
+      background-color: #15014d6f;
+      width: 90%;
+      margin-top: 20px;
+      padding: 40px 50px;
+      display: inline-block;
+      text-align: center;
+    }
+    
+    .input-text {
+      width: 96%;
+      padding: 10px 5px;
+      border: 2px solid white;
+      border-radius: 2px;
+    }
+    
+    .card {
+      width: 250px;
+      background: rgba(0, 18, 120, 0.575);
+      display: inline-flex;
+      flex-direction: row;
+      border-radius: 16px;
+      box-shadow: 0 0 10px #fafafa;
+      margin: 20px 10px 0 10px;
+    }
+    
+    .image-div {
+      display: flex;
+    }
+    
+    .card-text-div {
+      display: block;
+    }
+    
+    img {
+      width: 70px;
+    }
+    
+    h4 {
+      margin: 10px 0 0 20px;
+    }
+    
+    .card-availability-div {
+      position: relative;
+      top: 5px;
+      left: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="input-container">
+      <form id="inputForm">
+        <input
+          type="text"
+          id="inputText"
+          class="input-text"
+          placeholder="Enter the username"
+        />
+        <button type="submit">Check</button>
+      </form>
+    </div>
+    <div id="socialmedia-container" class="socialmedia-container"></div>
+  </div>
+
+  <script>
+    const items = [
+      { id: 1, title: "instagram", website: "https://www.instagram.com" },
+      { id: 2, title: "youtube", website: "https://www.youtube.com" },
+      { id: 3, title: "twitter", website: "https://www.twitter.com" },
+      { id: 4, title: "facebook", website: "https://www.facebook.com" },
+      { id: 5, title: "twitch", website: "https://www.twitch.com" },
+      { id: 6, title: "reddit", website: "https://www.reddit.com" },
+      { id: 7, title: "pinterest", website: "https://www.pinterest.com" },
+      { id: 8, title: "tumblr", website: "https://www.youtube.com" },
+      { id: 9, title: "linkedin", website: "https://www.linkedin.com" },
+    ];
+
+    const inputForm = document.getElementById("inputForm");
+    const inputText = document.getElementById("inputText");
+    const socialmediaContainer = document.getElementById("socialmedia-container");
+
+    inputForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const userName = inputText.value;
+      handleSetURL(userName);
+      inputText.value = "";
+    });
+
+    const handleSetURL = (url) => {
+      items.map((item, index) => {
+        items[index].website = item.website + "/" +url;
+        checkWebsiteExists(item.website, index);
+      });
+    };
+
+    const checkWebsiteExists = async (websiteUrl, index) => {
+  try {
+    const response = await fetch(websiteUrl, { method: "HEAD" });
+    if (response.status >= 200 && response.status < 300) {
+      setWebsiteExists(index, "❌ Unavailable");
+    } else {
+      setWebsiteExists(index, "✅ Available");
+    }
+  } catch (error) {
+    setWebsiteExists(index, "✅ Available");
+  }
+};
+
+    const setWebsiteExists = (index, status) => {
+      items[index].websiteExists = status;
+      renderSocialMediaCards();
+    };
+
+    const renderSocialMediaCards = () => {
+      socialmediaContainer.innerHTML = "";
+      items.forEach((item) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+
+        const imageDiv = document.createElement("div");
+        imageDiv.classList.add("image-div");
+
+        const image = document.createElement("img");
+        image.src = `./logos/${item.title}.png`;
+        image.alt = "img";
+
+        const cardTextDiv = document.createElement("div");
+        cardTextDiv.classList.add("card-text-div");
+
+        const title = document.createElement("h4");
+        title.innerText = item.title;
+
+        const cardAvailabilityDiv = document.createElement("div");
+        cardAvailabilityDiv.classList.add("card-availability-div");
+
+        const availability = document.createElement("p");
+        availability.innerText = item.websiteExists || "";
+
+        imageDiv.appendChild(image);
+        cardTextDiv.appendChild(title);
+        cardAvailabilityDiv.appendChild(availability);
+        card.appendChild(imageDiv);
+        card.appendChild(cardTextDiv);
+        card.appendChild(cardAvailabilityDiv);
+        socialmediaContainer.appendChild(card);
+      });
+    };
+
+    renderSocialMediaCards();
+  </script>
+</body>
+</html>
